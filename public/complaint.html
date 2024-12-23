@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Complaint Registration</title>
+  
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+    }
+
+    h1 {
+      text-align: center;
+    }
+
+    form {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 20px;
+      border: 1px solid #ddd;
+      background-color: #f9f9f9;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 5px;
+    }
+
+    input, textarea {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 15px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+
+    button {
+      padding: 10px 20px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      cursor: pointer;
+      border-radius: 4px;
+    }
+
+    button:hover {
+      background-color: #45a049;
+    }
+
+    #referenceMessage {
+      text-align: center;
+      margin-top: 20px;
+      color: green;
+      font-size: 18px;
+    }
+  </style>
+
+</head>
+<body>
+  <h1>Register Complaint</h1>
+  <form id="complaintForm">
+    <!-- Type of Complaint -->
+    <label for="complaintType">Type of Complaint:</label>
+    <input type="text" id="complaintType" name="complaintType" required>
+
+    <!-- Time and Date -->
+    <label for="complaintTime">Time and Date:</label>
+    <input type="datetime-local" id="complaintTime" name="complaintTime" required>
+
+    <!-- Suspect Details -->
+    <h3>Suspect Details</h3>
+    <label for="suspectName">Suspect Name:</label>
+    <input type="text" id="suspectName" name="suspectName">
+
+    <label for="suspectDescription">Suspect Description:</label>
+    <textarea id="suspectDescription" name="suspectDescription" rows="3"></textarea>
+
+    <!-- Location -->
+    <h3>Location Details</h3>
+    <label for="location">Location:</label>
+    <input type="text" id="location" name="location" required>
+
+    <label for="district">District:</label>
+    <input type="text" id="district" name="district" required>
+
+    <label for="policeStation">Local Police Station:</label>
+    <input type="text" id="policeStation" name="policeStation" required>
+
+    <!-- Submit Button -->
+    <button type="submit">Submit Complaint</button>
+  </form>
+
+  <!-- Reference ID Message -->
+  <div id="referenceMessage" style="display:none;"></div>
+
+  <!-- Button for Complaint Tracking -->
+  <button id="trackComplaintBtn">Track Complaint</button>
+
+  <script>
+    document.getElementById('complaintForm').addEventListener('submit', async (event) => {
+      event.preventDefault();
+
+      const complaintData = {
+        type: document.getElementById('complaintType').value,
+        time: document.getElementById('complaintTime').value,
+        suspect: {
+          name: document.getElementById('suspectName').value,
+          description: document.getElementById('suspectDescription').value,
+        },
+        location: document.getElementById('location').value,
+        district: document.getElementById('district').value,
+        policeStation: document.getElementById('policeStation').value,
+      };
+
+      // Send the complaint data to the server
+      const response = await fetch('/register-complaint', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(complaintData),
+      });
+
+      const data = await response.json();
+      if (data.success) {
+        document.getElementById('referenceMessage').style.display = 'block';
+        document.getElementById('referenceMessage').innerText = `Complaint registered successfully! Reference ID: ${data.referenceId}`;
+      } else {
+        alert('Error registering complaint. Please try again.');
+      }
+    });
+
+    // Redirect to complaint tracking page
+    document.getElementById('trackComplaintBtn').addEventListener('click', () => {
+      window.location.href = '/track-complaint.html';
+    });
+  </script>
+</body>
+</html>
